@@ -5,23 +5,36 @@ import { useIssuesStore } from '@/store/issues-store';
 import { useSearchStore } from '@/store/search-store';
 import { useViewStore } from '@/store/view-store';
 import { useFilterStore } from '@/store/filter-store';
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { GroupIssues } from './group-issues';
 import { SearchIssues } from './search-issues';
 import { CustomDragLayer } from './issue-grid';
 import { cn } from '@/lib/utils';
-import { Issue } from '@/mock-data/issues';
+import { Issue } from '@/types';
 
 export default function AllIssues() {
+   const { fetchIssues, loading, error } = useIssuesStore();
    const { isSearchOpen, searchQuery } = useSearchStore();
    const { viewType } = useViewStore();
    const { hasActiveFilters } = useFilterStore();
 
+   useEffect(() => {
+      fetchIssues();
+   }, [fetchIssues]);
+
    const isSearching = isSearchOpen && searchQuery.trim() !== '';
    const isViewTypeGrid = viewType === 'grid';
    const isFiltering = hasActiveFilters();
+
+   if (loading) {
+      return <div>Loading...</div>;
+   }
+
+   if (error) {
+      return <div>Error: {error}</div>;
+   }
 
    return (
       <div className={cn('w-full h-full', isViewTypeGrid && 'overflow-x-auto')}>
@@ -46,12 +59,19 @@ const FilteredIssuesView: FC<{
    isViewTypeGrid: boolean;
 }> = ({ isViewTypeGrid = false }) => {
    const { filters } = useFilterStore();
-   const { filterIssues } = useIssuesStore();
+   const { issues } = useIssuesStore();
 
-   // Apply filters to get filtered issues
    const filteredIssues = useMemo(() => {
-      return filterIssues(filters);
-   }, [filterIssues, filters]);
+      return issues.filter(issue => {
+        const statusMatch = filters.status.length ? filters.status.includes(issue.status) : true;
+        const priorityMatch = filters.priority.length ? filters.priority.includes(issue.priority) : true;
+        const assigneeMatch = filters.assignee.length ? issue.assignee && filters.assignee.includes(issue.assignee._id) : true;
+        const projectMatch = filters.project.length ? issue.project && filters.project.includes(issue.project._id) : true;
+        const labelsMatch = filters.labels.length ? issue.labels.some(label => filters.labels.includes(label._id)) : true;
+
+        return statusMatch && priorityMatch && assigneeMatch && projectMatch && labelsMatch;
+      });
+   }, [issues, filters]);
 
    // Group filtered issues by status
    const filteredIssuesByStatus = useMemo(() => {
@@ -59,7 +79,7 @@ const FilteredIssuesView: FC<{
 
       status.forEach((statusItem) => {
          result[statusItem.id] = filteredIssues.filter(
-            (issue) => issue.status.id === statusItem.id
+            (issue) => issue.status === statusItem.id
          );
       });
 
@@ -87,6 +107,7 @@ const GroupIssuesListView: FC<{
    isViewTypeGrid: boolean;
 }> = ({ isViewTypeGrid = false }) => {
    const { issuesByStatus } = useIssuesStore();
+
    return (
       <DndProvider backend={HTML5Backend}>
          <CustomDragLayer />

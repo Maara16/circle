@@ -1,24 +1,41 @@
 'use client';
 
-import { Issue } from '@/mock-data/issues';
-import { Status } from '@/mock-data/status';
+import { Status, status as statusData } from '@/mock-data/status';
 import { useIssuesStore } from '@/store/issues-store';
 import { useViewStore } from '@/store/view-store';
 import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
-import { FC, useRef } from 'react';
+import { FC, useMemo, useRef } from 'react';
 import { useDrop } from 'react-dnd';
 import { Button } from '../../ui/button';
 import { IssueDragType, IssueGrid } from './issue-grid';
 import { IssueLine } from './issue-line';
 import { useCreateIssueStore } from '@/store/create-issue-store';
-import { sortIssuesByPriority } from '@/mock-data/issues';
 import { AnimatePresence, motion } from 'motion/react';
+import { Issue } from '@/types';
 
 interface GroupIssuesProps {
    status: Status;
    issues: Issue[];
    count: number;
+}
+
+const sortIssuesByPriority = (issues: Issue[]): Issue[] => {
+   const priorityOrder: Record<string, number> = {
+      'Urgent': 0,
+      'High': 1,
+      'Medium': 2,
+      'Low': 3,
+      'No priority': 4,
+   };
+
+   return issues
+      .slice()
+      .sort(
+         (a, b) =>
+            priorityOrder[a.priority] -
+            priorityOrder[b.priority]
+      );
 }
 
 export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
@@ -53,7 +70,7 @@ export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
             >
                <div className="flex items-center gap-2">
                   <status.icon />
-                  <span className="text-sm font-medium">{status.name}</span>
+                  <span className="text-sm font-medium">{status.label}</span>
                   <span className="text-sm text-muted-foreground">{count}</span>
                </div>
 
@@ -74,7 +91,7 @@ export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
          {viewType === 'list' ? (
             <div className="space-y-0">
                {sortedIssues.map((issue) => (
-                  <IssueLine key={issue.id} issue={issue} layoutId={true} />
+                  <IssueLine key={issue._id} issue={issue} layoutId={true} />
                ))}
             </div>
          ) : (
@@ -92,8 +109,8 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({ issues, status
    const [{ isOver }, drop] = useDrop(() => ({
       accept: IssueDragType,
       drop(item: Issue, monitor) {
-         if (monitor.didDrop() && item.status.id !== status.id) {
-            updateIssueStatus(item.id, status);
+         if (monitor.didDrop() && item.status !== status.id) {
+            updateIssueStatus(item._id, status.id);
          }
       },
       collect: (monitor) => ({
@@ -130,7 +147,7 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({ issues, status
             )}
          </AnimatePresence>
          {sortedIssues.map((issue) => (
-            <IssueGrid key={issue.id} issue={issue} />
+            <IssueGrid key={issue._id} issue={issue} />
          ))}
       </div>
    );

@@ -1,60 +1,63 @@
 'use client';
 
-import { projects as allProjects } from '@/mock-data/projects';
 import ProjectLine from '@/components/common/projects/project-line';
 import { useProjectsFilterStore } from '@/store/projects-filter-store';
-import { useMemo } from 'react';
-import { status as statusList } from '@/mock-data/status';
+import { useEffect, useMemo } from 'react';
+import { useProjectsStore } from '@/store/projects-store';
+import { Project } from '@/types';
 
 export default function Projects() {
    const { filters, sort } = useProjectsFilterStore();
+   const { projects, loading, error, fetchProjects } = useProjectsStore();
 
-   const statusIndex = useMemo(() => {
-      const m = new Map<string, number>();
-      statusList.forEach((s, idx) => m.set(s.id, idx));
-      return m;
-   }, []);
+   useEffect(() => {
+      fetchProjects();
+   }, [fetchProjects]);
 
    const displayed = useMemo(() => {
-      let list = allProjects.slice();
+      let list = projects.slice();
 
       // filters
       if (filters.health.length > 0) {
          const hs = new Set(filters.health);
-         list = list.filter((p) => hs.has(p.health.id));
+         list = list.filter((p) => hs.has(p.health));
       }
-      if (filters.priority.length > 0) {
-         const ps = new Set(filters.priority);
-         list = list.filter((p) => ps.has(p.priority.id));
-      }
+      // Priority filter needs to be adapted if it exists in your new Project type
+      // if (filters.priority.length > 0) {
+      //    const ps = new Set(filters.priority);
+      //    list = list.filter((p) => ps.has(p.priority));
+      // }
 
       // sorting
-      const compare = (a: (typeof list)[number], b: (typeof list)[number]) => {
+      const compare = (a: Project, b: Project) => {
          switch (sort) {
             case 'title-asc':
                return a.name.localeCompare(b.name);
             case 'title-desc':
                return b.name.localeCompare(a.name);
-            case 'date-asc':
-               return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
-            case 'date-desc':
-               return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
-            case 'status-asc': {
-               const ai = statusIndex.get(a.status.id) ?? 0;
-               const bi = statusIndex.get(b.status.id) ?? 0;
-               return ai - bi;
-            }
-            case 'status-desc': {
-               const ai = statusIndex.get(a.status.id) ?? 0;
-               const bi = statusIndex.get(b.status.id) ?? 0;
-               return bi - ai;
-            }
+            // date-asc and date-desc need to be adapted to your new Project type fields
+            // case 'date-asc':
+            //    return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+            // case 'date-desc':
+            //    return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+            case 'status-asc':
+               return a.status.localeCompare(b.status);
+            case 'status-desc':
+               return b.status.localeCompare(a.status);
             default:
                return 0;
          }
       };
       return list.sort(compare);
-   }, [filters, sort, statusIndex]);
+   }, [projects, filters, sort]);
+
+   if (loading) {
+      return <div>Loading...</div>;
+   }
+
+   if (error) {
+      return <div>Error: {error}</div>;
+   }
 
    return (
       <div className="w-full">
@@ -69,7 +72,7 @@ export default function Projects() {
 
          <div className="w-full">
             {displayed.map((project) => (
-               <ProjectLine key={project.id} project={project} />
+               <ProjectLine key={project._id} project={project} />
             ))}
          </div>
       </div>

@@ -33,13 +33,13 @@ import {
    MessageSquare,
    Clipboard,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIssuesStore } from '@/store/issues-store';
+import { useUsersStore } from '@/store/users-store';
+import { useProjectsStore } from '@/store/projects-store';
 import { status } from '@/mock-data/status';
 import { priorities } from '@/mock-data/priorities';
-import { users } from '@/mock-data/users';
 import { labels } from '@/mock-data/labels';
-import { projects } from '@/mock-data/projects';
 import { toast } from 'sonner';
 
 interface IssueContextMenuProps {
@@ -51,39 +51,35 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
    const [isFavorite, setIsFavorite] = useState(false);
 
    const {
-      updateIssueStatus,
-      updateIssuePriority,
-      updateIssueAssignee,
-      addIssueLabel,
-      removeIssueLabel,
-      updateIssueProject,
       updateIssue,
       getIssueById,
    } = useIssuesStore();
 
+   const { users, fetchUsers } = useUsersStore();
+   const { projects, fetchProjects } = useProjectsStore();
+
+   useEffect(() => {
+      fetchUsers();
+      fetchProjects();
+   }, [fetchUsers, fetchProjects]);
+
+
    const handleStatusChange = (statusId: string) => {
       if (!issueId) return;
-      const newStatus = status.find((s) => s.id === statusId);
-      if (newStatus) {
-         updateIssueStatus(issueId, newStatus);
-         toast.success(`Status updated to ${newStatus.name}`);
-      }
+      updateIssue(issueId, { status: statusId as any });
+      toast.success(`Status updated`);
    };
 
    const handlePriorityChange = (priorityId: string) => {
       if (!issueId) return;
-      const newPriority = priorities.find((p) => p.id === priorityId);
-      if (newPriority) {
-         updateIssuePriority(issueId, newPriority);
-         toast.success(`Priority updated to ${newPriority.name}`);
-      }
+      updateIssue(issueId, { priority: priorityId as any });
+      toast.success(`Priority updated`);
    };
 
    const handleAssigneeChange = (userId: string | null) => {
       if (!issueId) return;
-      const newAssignee = userId ? users.find((u) => u.id === userId) || null : null;
-      updateIssueAssignee(issueId, newAssignee);
-      toast.success(newAssignee ? `Assigned to ${newAssignee.name}` : 'Unassigned');
+      updateIssue(issueId, { assignee: userId as any });
+      toast.success(userId ? `Assigned to user` : 'Unassigned');
    };
 
    const handleLabelToggle = (labelId: string) => {
@@ -93,30 +89,27 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 
       if (!issue || !label) return;
 
-      const hasLabel = issue.labels.some((l) => l.id === labelId);
+      const hasLabel = issue.labels.some((l) => l._id === labelId);
 
       if (hasLabel) {
-         removeIssueLabel(issueId, labelId);
+         const newLabels = issue.labels.filter(l => l._id !== labelId);
+         updateIssue(issueId, { labels: newLabels });
          toast.success(`Removed label: ${label.name}`);
       } else {
-         addIssueLabel(issueId, label);
+         const newLabels = [...issue.labels, label as any];
+         updateIssue(issueId, { labels: newLabels });
          toast.success(`Added label: ${label.name}`);
       }
    };
 
    const handleProjectChange = (projectId: string | null) => {
       if (!issueId) return;
-      const newProject = projectId ? projects.find((p) => p.id === projectId) : undefined;
-      updateIssueProject(issueId, newProject);
-      toast.success(newProject ? `Project set to ${newProject.name}` : 'Project removed');
+      updateIssue(issueId, { project: projectId as any });
+      toast.success(projectId ? `Project set` : 'Project removed');
    };
 
    const handleSetDueDate = () => {
-      if (!issueId) return;
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 7);
-      updateIssue(issueId, { dueDate: dueDate.toISOString() });
-      toast.success('Due date set to 7 days from now');
+      // Due date not implemented in backend yet
    };
 
    const handleAddLink = () => {
@@ -174,7 +167,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
                      const Icon = s.icon;
                      return (
                         <ContextMenuItem key={s.id} onClick={() => handleStatusChange(s.id)}>
-                           <Icon /> {s.name}
+                           <Icon /> {s.label}
                         </ContextMenuItem>
                      );
                   })}
@@ -189,15 +182,13 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
                   <ContextMenuItem onClick={() => handleAssigneeChange(null)}>
                      <User className="size-4" /> Unassigned
                   </ContextMenuItem>
-                  {users
-                     .filter((user) => user.teamIds.includes('CORE'))
-                     .map((user) => (
+                  {users.map((user) => (
                         <ContextMenuItem
-                           key={user.id}
-                           onClick={() => handleAssigneeChange(user.id)}
+                           key={user._id}
+                           onClick={() => handleAssigneeChange(user._id)}
                         >
                            <Avatar className="size-4">
-                              <AvatarImage src={user.avatarUrl} alt={user.name} />
+                              <AvatarImage src={user.avatar} alt={user.name} />
                               <AvatarFallback>{user.name[0]}</AvatarFallback>
                            </Avatar>
                            {user.name}
@@ -216,7 +207,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
                         key={priority.id}
                         onClick={() => handlePriorityChange(priority.id)}
                      >
-                        <priority.icon className="size-4" /> {priority.name}
+                        <priority.icon className="size-4" /> {priority.label}
                      </ContextMenuItem>
                   ))}
                </ContextMenuSubContent>
@@ -248,12 +239,12 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
                   <ContextMenuItem onClick={() => handleProjectChange(null)}>
                      <Folder className="size-4" /> No Project
                   </ContextMenuItem>
-                  {projects.slice(0, 5).map((project) => (
+                  {projects.map((project) => (
                      <ContextMenuItem
-                        key={project.id}
-                        onClick={() => handleProjectChange(project.id)}
+                        key={project._id}
+                        onClick={() => handleProjectChange(project._id)}
                      >
-                        <project.icon className="size-4" /> {project.name}
+                        {project.name}
                      </ContextMenuItem>
                   ))}
                </ContextMenuSubContent>

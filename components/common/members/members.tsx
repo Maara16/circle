@@ -1,44 +1,60 @@
 'use client';
 
-import { users as allUsers } from '@/mock-data/users';
 import MemberLine from './member-line';
 import { useMembersFilterStore } from '@/store/members-filter-store';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useUsersStore } from '@/store/users-store';
+import { User } from '@/types';
 
 export default function Members() {
    const { filters, sort } = useMembersFilterStore();
+   const { users, loading, error, fetchUsers } = useUsersStore();
+
+   useEffect(() => {
+      fetchUsers();
+   }, [fetchUsers]);
 
    const displayed = useMemo(() => {
-      let list = allUsers.slice();
+      let list = users.slice();
 
       // filter by role (called Status in UI)
-      if (filters.role.length > 0) {
-         const roles = new Set(filters.role);
-         list = list.filter((u) => roles.has(u.role));
-      }
+      // This needs to be adapted to your new User type
+      // if (filters.role.length > 0) {
+      //    const roles = new Set(filters.role);
+      //    list = list.filter((u) => roles.has(u.role));
+      // }
 
       // sorting
-      const compare = (a: (typeof list)[number], b: (typeof list)[number]) => {
+      const compare = (a: User, b: User) => {
          switch (sort) {
             case 'name-asc':
                return a.name.localeCompare(b.name);
             case 'name-desc':
                return b.name.localeCompare(a.name);
-            case 'joined-asc':
-               return new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime();
-            case 'joined-desc':
-               return new Date(b.joinedDate).getTime() - new Date(a.joinedDate).getTime();
+            // joined-asc and joined-desc need to be adapted
+            // case 'joined-asc':
+            //    return new Date(a.joinedDate).getTime() - new Date(b.joinedDate).getTime();
+            // case 'joined-desc':
+            //    return new Date(b.joinedDate).getTime() - new Date(a.joinedDate).getTime();
             case 'teams-asc':
-               return a.teamIds.length - b.teamIds.length;
+               return a.teams.length - b.teams.length;
             case 'teams-desc':
-               return b.teamIds.length - a.teamIds.length;
+               return b.teams.length - a.teams.length;
             default:
                return 0;
          }
       };
 
       return list.sort(compare);
-   }, [filters, sort]);
+   }, [users, filters, sort]);
+
+   if (loading) {
+      return <div>Loading...</div>;
+   }
+
+   if (error) {
+      return <div>Error: {error}</div>;
+   }
 
    return (
       <div className="w-full">
@@ -51,7 +67,7 @@ export default function Members() {
 
          <div className="w-full">
             {displayed.map((user) => (
-               <MemberLine key={user.id} user={user} />
+               <MemberLine key={user._id} user={user} />
             ))}
          </div>
       </div>

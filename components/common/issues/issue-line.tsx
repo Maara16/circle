@@ -1,6 +1,5 @@
 'use client';
 
-import { Issue } from '@/mock-data/issues';
 import { format } from 'date-fns';
 import { AssigneeUser } from './assignee-user';
 import { LabelBadge } from './label-badge';
@@ -11,22 +10,23 @@ import { motion } from 'motion/react';
 
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
 import { IssueContextMenu } from './issue-context-menu';
+import { Issue } from '@/types';
 
 export function IssueLine({ issue, layoutId = false }: { issue: Issue; layoutId?: boolean }) {
    return (
       <ContextMenu>
          <ContextMenuTrigger asChild>
             <motion.div
-               {...(layoutId && { layoutId: `issue-line-${issue.identifier}` })}
-               //href={`/lndev-ui/issue/${issue.identifier}`}
+               {...(layoutId && { layoutId: `issue-line-${issue._id}` })}
+               //href={`/lndev-ui/issue/${issue._id}`}
                className="w-full flex items-center justify-start h-11 px-6 hover:bg-sidebar/50"
             >
                <div className="flex items-center gap-0.5">
-                  <PrioritySelector priority={issue.priority} issueId={issue.id} />
+                  <PrioritySelector priority={issue.priority} issueId={issue._id} />
                   <span className="text-sm hidden sm:inline-block text-muted-foreground font-medium w-[66px] truncate shrink-0 mr-0.5">
-                     {issue.identifier}
+                     {issue._id.slice(-6)}
                   </span>
-                  <StatusSelector status={issue.status} issueId={issue.id} />
+                  <StatusSelector status={issue.status} issueId={issue._id} />
                </div>
                <span className="min-w-0 flex items-center justify-start mr-1 ml-0.5">
                   <span className="text-xs sm:text-sm font-medium sm:font-semibold truncate">
@@ -36,7 +36,7 @@ export function IssueLine({ issue, layoutId = false }: { issue: Issue; layoutId?
                <div className="flex items-center justify-end gap-2 ml-auto sm:w-fit">
                   <div className="w-3 shrink-0"></div>
                   <div className="-space-x-5 hover:space-x-1 lg:space-x-1 items-center justify-end hidden sm:flex duration-200 transition-all">
-                     <LabelBadge label={issue.labels} />
+                     <LabelBadge labels={issue.labels} />
                      {issue.project && <ProjectBadge project={issue.project} />}
                   </div>
                   <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline-block">
@@ -46,7 +46,7 @@ export function IssueLine({ issue, layoutId = false }: { issue: Issue; layoutId?
                </div>
             </motion.div>
          </ContextMenuTrigger>
-         <IssueContextMenu issueId={issue.id} />
+         <IssueContextMenu issueId={issue._id} />
       </ContextMenu>
    );
 }

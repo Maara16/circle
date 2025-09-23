@@ -1,12 +1,12 @@
 import { Badge } from '@/components/ui/badge';
-import { LabelInterface } from '@/mock-data/labels';
+import { Label } from '@/types';
 
-export function LabelBadge({ label }: { label: LabelInterface[] }) {
+export function LabelBadge({ labels }: { labels: Label[] }) {
    return (
       <>
-         {label.map((l) => (
+         {labels.map((l) => (
             <Badge
-               key={l.id}
+               key={l._id}
                variant="outline"
                className="gap-1.5 rounded-full text-muted-foreground bg-background"
             >

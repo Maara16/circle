@@ -1,9 +1,24 @@
 'use client';
 
-import { teams } from '@/mock-data/teams';
+import { useEffect } from 'react';
+import { useTeamsStore } from '@/store/teams-store';
 import TeamLine from './team-line';
 
 export default function Teams() {
+   const { teams, loading, error, fetchTeams } = useTeamsStore();
+
+   useEffect(() => {
+      fetchTeams();
+   }, [fetchTeams]);
+
+   if (loading) {
+      return <div>Loading...</div>;
+   }
+
+   if (error) {
+      return <div>Error: {error}</div>;
+   }
+
    return (
       <div className="w-full">
          <div className="bg-container px-6 py-1.5 text-sm flex items-center text-muted-foreground border-b sticky top-0 z-10">
@@ -16,7 +31,7 @@ export default function Teams() {
 
          <div className="w-full">
             {teams.map((team) => (
-               <TeamLine key={team.id} team={team} />
+               <TeamLine key={team._id} team={team} />
             ))}
          </div>
       </div>

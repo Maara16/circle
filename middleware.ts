@@ -11,6 +11,12 @@ const getSecret = () => {
 };
 
 export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  if (pathname.startsWith('/api/auth/')) {
+    return NextResponse.next();
+  }
+
   const token = req.headers.get('authorization')?.split(' ')[1];
 
   if (!token) {
@@ -32,5 +38,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/projects/:path*', '/api/issues/:path*', '/api/teams/:path*', '/api/users/:path*'],
+  matcher: '/api/:path*',
 };

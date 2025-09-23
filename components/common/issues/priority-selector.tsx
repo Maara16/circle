@@ -11,35 +11,32 @@ import {
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useIssuesStore } from '@/store/issues-store';
-import { priorities, Priority } from '@/mock-data/priorities';
+import { priorities } from '@/mock-data/priorities';
 import { CheckIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 
 interface PrioritySelectorProps {
-   priority: Priority;
+   priority: string;
    issueId?: string;
 }
 
 export function PrioritySelector({ priority, issueId }: PrioritySelectorProps) {
    const id = useId();
    const [open, setOpen] = useState<boolean>(false);
-   const [value, setValue] = useState<string>(priority.id);
+   const [value, setValue] = useState<string>(priority);
 
-   const { filterByPriority, updateIssuePriority } = useIssuesStore();
+   const { updateIssuePriority } = useIssuesStore();
 
    useEffect(() => {
-      setValue(priority.id);
-   }, [priority.id]);
+      setValue(priority);
+   }, [priority]);
 
    const handlePriorityChange = (priorityId: string) => {
       setValue(priorityId);
       setOpen(false);
 
       if (issueId) {
-         const newPriority = priorities.find((p) => p.id === priorityId);
-         if (newPriority) {
-            updateIssuePriority(issueId, newPriority);
-         }
+         updateIssuePriority(issueId, priorityId);
       }
    };
 
@@ -83,12 +80,9 @@ export function PrioritySelector({ priority, issueId }: PrioritySelectorProps) {
                            >
                               <div className="flex items-center gap-2">
                                  <item.icon className="text-muted-foreground size-4" />
-                                 {item.name}
+                                 {item.label}
                               </div>
                               {value === item.id && <CheckIcon size={16} className="ml-auto" />}
-                              <span className="text-muted-foreground text-xs">
-                                 {filterByPriority(item.id).length}
-                              </span>
                            </CommandItem>
                         ))}
                      </CommandGroup>

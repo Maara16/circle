@@ -7,6 +7,7 @@ export interface IIssue extends Document {
   assignee?: Types.ObjectId;
   status: 'Backlog' | 'Todo' | 'In Progress' | 'Done' | 'Canceled';
   priority: 'No priority' | 'Low' | 'Medium' | 'High' | 'Urgent';
+  labels: Types.ObjectId[];
 }
 
 const IssueSchema = new Schema<IIssue>({
@@ -24,6 +25,7 @@ const IssueSchema = new Schema<IIssue>({
     enum: ['No priority', 'Low', 'Medium', 'High', 'Urgent'],
     default: 'No priority',
   },
+  labels: [{ type: Schema.Types.ObjectId, ref: 'Label' }],
 }, { timestamps: true });
 
 export default mongoose.models.Issue || mongoose.model<IIssue>('Issue', IssueSchema);

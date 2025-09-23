@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
     const filter = projectId ? { project: projectId } : {};
 
-    const issues = await Issue.find(filter).populate('project').populate('assignee');
+    const issues = await Issue.find(filter).populate('project').populate('assignee').populate('labels');
     return NextResponse.json({ success: true, data: issues });
   } catch (error) {
     const e = error as Error;
