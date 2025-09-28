@@ -7,6 +7,9 @@ export interface IUser extends Document {
   password?: string;
   avatar?: string;
   teams: Types.ObjectId[];
+  role: string;
+  joinDate: Date;
+  status: 'active' | 'inactive';
   comparePassword(password: string): Promise<boolean>;
 }
 
@@ -16,6 +19,9 @@ const UserSchema = new Schema<IUser>({
   password: { type: String, required: true, select: false },
   avatar: { type: String },
   teams: [{ type: Schema.Types.ObjectId, ref: 'Team' }],
+  role: { type: String, default: 'Member' },
+  joinDate: { type: Date, default: Date.now },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
 });
 
 UserSchema.pre<IUser>('save', async function (next) {

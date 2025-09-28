@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
-import TeamModel from '@/models/Team';
+import UserModel from '@/models/User';
 
 export async function GET() {
   try {
     await connectToDatabase();
-    const teams = await TeamModel.find({}).populate('members').populate('projects');
-    return NextResponse.json({ success: true, data: teams });
+    const users = await UserModel.find({}).populate('teams');
+    return NextResponse.json({ success: true, data: users });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
@@ -17,10 +17,10 @@ export async function POST(request: NextRequest) {
   try {
     await connectToDatabase();
     const body = await request.json();
-    const newTeam = new TeamModel(body);
-    await newTeam.save();
-    const populatedTeam = await TeamModel.findById(newTeam._id).populate('members').populate('projects');
-    return NextResponse.json({ success: true, data: populatedTeam }, { status: 201 });
+    const newUser = new UserModel(body);
+    await newUser.save();
+    const populatedUser = await UserModel.findById(newUser._id).populate('teams');
+    return NextResponse.json({ success: true, data: populatedUser }, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });

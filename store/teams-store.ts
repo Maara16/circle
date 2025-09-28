@@ -30,37 +30,46 @@ export const useTeamsStore = create<TeamsState>((set, get) => ({
   },
 
   addTeam: async (teamData) => {
+    set({ loading: true });
     try {
       const newTeam = await api.post<Team>('teams', teamData);
       set((state) => ({
         teams: [...state.teams, newTeam],
+        loading: false,
       }));
     } catch (error) {
       console.error("Failed to add team:", error);
+      set({ loading: false, error: (error as Error).message });
     }
   },
 
   updateTeam: async (teamId, updatedData) => {
+    set({ loading: true });
     try {
       const updatedTeam = await api.put<Team>(`teams/${teamId}`, updatedData);
       set((state) => ({
         teams: state.teams.map((t) =>
           t._id === teamId ? updatedTeam : t
         ),
+        loading: false,
       }));
     } catch (error) {
       console.error("Failed to update team:", error);
+      set({ loading: false, error: (error as Error).message });
     }
   },
 
   deleteTeam: async (teamId) => {
+    set({ loading: true });
     try {
       await api.delete(`teams/${teamId}`);
       set((state) => ({
         teams: state.teams.filter((t) => t._id !== teamId),
+        loading: false,
       }));
     } catch (error) {
       console.error("Failed to delete team:", error);
+      set({ loading: false, error: (error as Error).message });
     }
   },
 

@@ -22,7 +22,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   fetchUsers: async () => {
     set({ loading: true, error: null });
     try {
-      const users = await api.get<User[]>('users');
+      const users = await api.get<User[]>('members');
       set({ users, loading: false });
     } catch (error) {
       set({ error: (error as Error).message, loading: false });
@@ -30,21 +30,24 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   },
 
   addUser: async (userData) => {
-    // Note: User creation is handled by the register endpoint.
-    // This is here for completeness, but might not be used.
+    set({ loading: true });
     try {
-      const newUser = await api.post<User>('users', userData);
+      const newUser = await api.post<User>('members', userData);
       set((state) => ({
         users: [...state.users, newUser],
       }));
     } catch (error) {
       console.error("Failed to add user:", error);
+      set({ error: (error as Error).message });
+    } finally {
+      set({ loading: false });
     }
   },
 
   updateUser: async (userId, updatedData) => {
+    set({ loading: true });
     try {
-      const updatedUser = await api.put<User>(`users/${userId}`, updatedData);
+      const updatedUser = await api.put<User>(`members/${userId}`, updatedData);
       set((state) => ({
         users: state.users.map((u) =>
           u._id === userId ? updatedUser : u
@@ -52,17 +55,24 @@ export const useUsersStore = create<UsersState>((set, get) => ({
       }));
     } catch (error) {
       console.error("Failed to update user:", error);
+      set({ error: (error as Error).message });
+    } finally {
+      set({ loading: false });
     }
   },
 
   deleteUser: async (userId) => {
+    set({ loading: true });
     try {
-      await api.delete(`users/${userId}`);
+      await api.delete(`members/${userId}`);
       set((state) => ({
         users: state.users.filter((u) => u._id !== userId),
       }));
     } catch (error) {
       console.error("Failed to delete user:", error);
+      set({ error: (error as Error).message });
+    } finally {
+      set({ loading: false });
     }
   },
 

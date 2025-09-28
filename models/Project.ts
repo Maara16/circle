@@ -8,6 +8,8 @@ export interface IProject extends Document {
   status: 'Not Started' | 'In Progress' | 'Completed';
   health: 'On Track' | 'At Risk' | 'Off Track';
   issues: Types.ObjectId[];
+  startDate: Date;
+  endDate?: Date;
 }
 
 const ProjectSchema = new Schema<IProject>({
@@ -26,6 +28,8 @@ const ProjectSchema = new Schema<IProject>({
     default: 'On Track',
   },
   issues: [{ type: Schema.Types.ObjectId, ref: 'Issue' }],
+  startDate: { type: Date, default: Date.now },
+  endDate: { type: Date },
 });
 
 export default mongoose.models.Project || mongoose.model<IProject>('Project', ProjectSchema);

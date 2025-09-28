@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/db';
-import TeamModel from '@/models/Team';
+import UserModel from '@/models/User';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectToDatabase();
-    const team = await TeamModel.findById(params.id).populate('members').populate('projects');
-    if (!team) {
-      return NextResponse.json({ success: false, error: 'Team not found' }, { status: 404 });
+    const user = await UserModel.findById(params.id).populate('teams');
+    if (!user) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
-    return NextResponse.json({ success: true, data: team });
+    return NextResponse.json({ success: true, data: user });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
@@ -20,13 +20,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   try {
     await connectToDatabase();
     const body = await request.json();
-    const updatedTeam = await TeamModel.findByIdAndUpdate(params.id, body, { new: true })
-      .populate('members')
-      .populate('projects');
-    if (!updatedTeam) {
-      return NextResponse.json({ success: false, error: 'Team not found' }, { status: 404 });
+    const updatedUser = await UserModel.findByIdAndUpdate(params.id, body, { new: true }).populate(
+      'teams'
+    );
+    if (!updatedUser) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
-    return NextResponse.json({ success: true, data: updatedTeam });
+    return NextResponse.json({ success: true, data: updatedUser });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
@@ -36,11 +36,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectToDatabase();
-    const deletedTeam = await TeamModel.findByIdAndDelete(params.id);
-    if (!deletedTeam) {
-      return NextResponse.json({ success: false, error: 'Team not found' }, { status: 404 });
+    const deletedUser = await UserModel.findByIdAndDelete(params.id);
+    if (!deletedUser) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
     }
-    return NextResponse.json({ success: true, data: { message: 'Team deleted successfully' } });
+    return NextResponse.json({ success: true, data: { message: 'User deleted successfully' } });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });

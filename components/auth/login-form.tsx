@@ -14,12 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
-import { User } from '@/types';
-
-interface LoginResponse {
-    user: User;
-    token: string;
-}
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -32,9 +26,8 @@ export function LoginForm() {
     setError('');
 
     try {
-      const response = await api.post<LoginResponse>('auth/login', { email, password });
-      localStorage.setItem('token', response.token);
-      router.push('/'); // Redirect to the main app page
+      await api.post('auth/login', { email, password });
+      router.refresh();
     } catch (err) {
       setError((err as Error).message);
     }

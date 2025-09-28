@@ -1,42 +1,28 @@
-import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/db';
-import Project from '@/models/Project';
-import { NextApiRequest } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
+import connectToDatabase from '@/lib/db';
+import ProjectModel from '@/models/Project';
 
-export async function POST(request: Request) {
-  await dbConnect();
-
+export async function GET() {
   try {
-    const { name, description, team, lead } = await request.json();
-
-    if (!name || !team) {
-      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
-    }
-
-    const project = new Project({
-      name,
-      description,
-      team,
-      lead,
-    });
-
-    await project.save();
-
-    return NextResponse.json({ success: true, data: project });
+    await connectToDatabase();
+    const projects = await ProjectModel.find({}).populate('team').populate('lead');
+    return NextResponse.json({ success: true, data: projects });
   } catch (error) {
-    const e = error as Error;
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-export async function GET(request: Request) {
-  await dbConnect();
-
+export async function POST(request: NextRequest) {
   try {
-    const projects = await Project.find({}).populate('team').populate('lead');
-    return NextResponse.json({ success: true, data: projects });
+    await connectToDatabase();
+    const body = await request.json();
+    const newProject = new ProjectModel(body);
+    await newProject.save();
+    const populatedProject = await ProjectModel.findById(newProject._id).populate('team').populate('lead');
+    return NextResponse.json({ success: true, data: populatedProject }, { status: 201 });
   } catch (error) {
-    const e = error as Error;
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
   }
 }

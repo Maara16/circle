@@ -4,6 +4,9 @@ export interface User {
   email: string;
   avatar?: string;
   teams: string[];
+  role: string;
+  joinDate: string;
+  status: 'active' | 'inactive';
 }
 
 export interface Team {
@@ -23,6 +26,8 @@ export interface Project {
   status: 'Not Started' | 'In Progress' | 'Completed';
   health: 'On Track' | 'At Risk' | 'Off Track';
   issues: Issue[];
+  startDate: string;
+  endDate?: string;
 }
 
 export interface Issue {

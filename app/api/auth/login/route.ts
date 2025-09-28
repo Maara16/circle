@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   await dbConnect();
@@ -30,13 +30,19 @@ export async function POST(request: Request) {
       expiresIn: '1d',
     });
 
-    // Return user and token, but don't include password in the user object
+    cookies().set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development',
+      maxAge: 60 * 60 * 24, // 1 day
+      path: '/',
+    });
+
     const userResponse = { ...user.toObject() };
     delete userResponse.password;
 
-    return NextResponse.json({ success: true, data: { user: userResponse, token } });
+    return NextResponse.json({ success: true, data: { user: userResponse } });
   } catch (error) {
-    const e = error as Error
+    const e = error as Error;
     return NextResponse.json({ success: false, error: e.message }, { status: 500 });
   }
 }

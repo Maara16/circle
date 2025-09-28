@@ -30,19 +30,23 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   },
 
   addProject: async (projectData) => {
+    set({ loading: true });
     try {
-      const newProject = await api.post<Project>('projects', projectData);
+      const { data: newProject } = await api.post<{ data: Project }>('projects', projectData);
       set((state) => ({
         projects: [...state.projects, newProject],
       }));
     } catch (error) {
       console.error("Failed to add project:", error);
+    } finally {
+      set({ loading: false });
     }
   },
 
   updateProject: async (projectId, updatedData) => {
+    set({ loading: true });
     try {
-      const updatedProject = await api.put<Project>(`projects/${projectId}`, updatedData);
+      const { data: updatedProject } = await api.put<{ data: Project }>(`projects/${projectId}`, updatedData);
       set((state) => ({
         projects: state.projects.map((p) =>
           p._id === projectId ? updatedProject : p
@@ -50,10 +54,13 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
       }));
     } catch (error) {
       console.error("Failed to update project:", error);
+    } finally {
+      set({ loading: false });
     }
   },
 
   deleteProject: async (projectId) => {
+    set({ loading: true });
     try {
       await api.delete(`projects/${projectId}`);
       set((state) => ({
@@ -61,6 +68,8 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
       }));
     } catch (error) {
       console.error("Failed to delete project:", error);
+    } finally {
+      set({ loading: false });
     }
   },
 
