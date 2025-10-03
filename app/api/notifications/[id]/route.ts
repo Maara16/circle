@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { notifications } from '@/lib/db';
+import Notification from '@/models/Notification';
+import dbConnect from '@/lib/db';
 import { issues } from '@/mock-data/issues';
 import { users } from '@/mock-data/users';
 
@@ -7,50 +8,84 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
-  const { isRead } = await request.json();
-  const notificationIndex = notifications.findIndex((n) => n.id === id);
+  try {
+    await dbConnect();
 
-  if (notificationIndex === -1) {
-    return NextResponse.json({ message: 'Notification not found' }, { status: 404 });
+    const { id } = params;
+    const { isRead } = await request.json();
+
+    const notification = await Notification.findOneAndUpdate(
+      { uid: id, isDeleted: false },
+      { isRead, updatedAt: new Date() },
+      { new: true }
+    );
+
+    if (!notification) {
+      return NextResponse.json({
+        success: false,
+        statusCode: 404,
+        message: 'Notification not found',
+      }, { status: 404 });
+    }
+
+    const issue = issues.find((issue) => issue.id === notification.entityId);
+    const actor = users.find((user) => user.id === notification.actorId);
+
+    const hydratedNotification = {
+      ...notification.toObject(),
+      issue,
+      actor,
+    };
+
+    return NextResponse.json({
+      success: true,
+      statusCode: 200,
+      data: hydratedNotification,
+    });
+  } catch (error) {
+    const err = error as Error;
+    return NextResponse.json({
+      success: false,
+      statusCode: 500,
+      message: err.message,
+    }, { status: 500 });
   }
-
-  notifications[notificationIndex].isRead = isRead;
-  const updatedNotification = notifications[notificationIndex];
-
-  const issue = issues.find((issue) => issue.id === updatedNotification.entityId);
-  const actor = users.find((user) => user.id === updatedNotification.actorId);
-
-  const hydratedNotification = {
-    ...updatedNotification,
-    issue,
-    actor,
-  };
-
-  return NextResponse.json(hydratedNotification);
 }
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { id } = params;
-  const notificationIndex = notifications.findIndex((n) => n.id === id);
+  try {
+    await dbConnect();
 
-  if (notificationIndex === -1) {
-    return NextResponse.json({ message: 'Notification not found' }, { status: 404 });
+    const { id } = params;
+
+    const notification = await Notification.findOneAndUpdate(
+      { uid: id, isDeleted: false },
+      { isDeleted: true, updatedAt: new Date() },
+      { new: true }
+    );
+
+    if (!notification) {
+      return NextResponse.json({
+        success: false,
+        statusCode: 404,
+        message: 'Notification not found',
+      }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      statusCode: 200,
+      message: 'Notification deleted successfully',
+    });
+  } catch (error) {
+    const err = error as Error;
+    return NextResponse.json({
+      success: false,
+      statusCode: 500,
+      message: err.message,
+    }, { status: 500 });
   }
-
-  const [deletedNotification] = notifications.splice(notificationIndex, 1);
-
-  const issue = issues.find((issue) => issue.id === deletedNotification.entityId);
-  const actor = users.find((user) => user.id === deletedNotification.actorId);
-
-  const hydratedNotification = {
-    ...deletedNotification,
-    issue,
-    actor,
-  };
-
-  return NextResponse.json(hydratedNotification);
 }
