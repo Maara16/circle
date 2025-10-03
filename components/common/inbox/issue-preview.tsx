@@ -1,7 +1,6 @@
 'use client';
 
-import { InboxItem } from '@/mock-data/inbox';
-import { useNotificationsStore } from '@/store/notifications-store';
+import { HydratedNotification, useNotificationsStore } from '@/store/notifications-store';
 import { renderStatusIcon } from '@/lib/status-utils';
 import { Button } from '@/components/ui/button';
 import { NotificationBox } from './icons/motification-box';
@@ -9,7 +8,7 @@ import { Check, Paperclip, Send } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 
 interface IssuePreviewProps {
-   notification?: InboxItem;
+   notification?: HydratedNotification;
    onMarkAsRead?: (id: string) => void;
 }
 
@@ -36,11 +35,13 @@ export default function IssuePreview({ notification, onMarkAsRead }: IssuePrevie
       <div className="flex flex-col h-full">
          <div className="flex items-center justify-between px-4 h-10 border-b border-border">
             <div className="flex items-center gap-3">
-               <span className="text-sm font-medium">{notification.identifier}</span>
+               {notification.issue && (
+                  <span className="text-sm font-medium">{notification.issue.identifier}</span>
+               )}
             </div>
 
             <div className="flex items-center gap-2">
-               {!notification.read && onMarkAsRead && (
+               {!notification.isRead && onMarkAsRead && (
                   <Button
                      variant="outline"
                      size="xs"
@@ -55,22 +56,26 @@ export default function IssuePreview({ notification, onMarkAsRead }: IssuePrevie
          </div>
 
          <div className="pt-10 pb-6 px-4 space-y-4 w-full max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
-               <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-muted-foreground">
-                     {notification.identifier}
-                  </span>
+            {notification.issue && (
+               <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                     <span className="text-sm font-medium text-muted-foreground">
+                        {notification.issue.identifier}
+                     </span>
 
-                  <div className="shrink-0">{renderStatusIcon(notification.status.id)}</div>
+                     <div className="shrink-0">{renderStatusIcon(notification.issue.status.id)}</div>
+                  </div>
                </div>
-            </div>
+            )}
 
             <div>
-               <h3 className="text-xl font-semibold text-foreground mb-2">{notification.title}</h3>
+               <h3 className="text-xl font-semibold text-foreground mb-2">
+                  {notification.issue?.title || notification.message}
+               </h3>
             </div>
 
             <div className="prose prose-sm max-w-none">
-               <p className="text-foreground leading-relaxed">{notification.content}</p>
+               <p className="text-foreground leading-relaxed">{notification.message}</p>
             </div>
 
             <div className="relative w-full flex flex-col mt-8">

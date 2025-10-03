@@ -1,14 +1,15 @@
 'use client';
 
-import { InboxItem } from '@/mock-data/inbox';
+import { HydratedNotification } from '@/store/notifications-store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 import { renderStatusIcon } from '@/lib/status-utils';
 import { getNotificationIcon } from '@/lib/notification-utils';
+import { formatDistanceToNow } from 'date-fns';
 
 interface IssueLineProps {
-   notification: InboxItem;
+   notification: HydratedNotification;
    layoutId?: boolean;
    isSelected?: boolean;
    onClick?: () => void;
@@ -38,9 +39,9 @@ export default function IssueLine({
          >
             <div className="relative flex-shrink-0">
                <Avatar className="size-8">
-                  <AvatarImage src={notification.user.avatarUrl} alt={notification.user.name} />
+                  <AvatarImage src={notification.actor?.avatarUrl} alt={notification.actor?.name} />
                   <AvatarFallback className="text-xs">
-                     {notification.user.name
+                     {notification.actor?.name
                         .split(' ')
                         .map((n) => n[0])
                         .join('')}
@@ -54,45 +55,45 @@ export default function IssueLine({
 
             <div className="w-full">
                <div className="flex items-center gap-1.5">
-                  {!notification.read && (
+                  {!notification.isRead && (
                      <div className="size-2 bg-blue-500 rounded-full flex-shrink-0" />
                   )}
-                  {showId && (
+                  {showId && notification.issue && (
                      <span
                         className={cn(
                            'text-sm font-medium text-muted-foreground shrink-0',
-                           notification.read && 'opacity-50'
+                           notification.isRead && 'opacity-50'
                         )}
                      >
-                        {notification.identifier}
+                        {notification.issue.identifier}
                      </span>
                   )}
 
                   <h4
                      className={cn(
                         'text-sm font-medium text-foreground line-clamp-1 flex-grow',
-                        notification.read && 'opacity-50'
+                        notification.isRead && 'opacity-50'
                      )}
                   >
-                     {notification.title}
+                     {notification.issue?.title || notification.message}
                   </h4>
 
-                  {showStatusIcon && (
-                     <div className="shrink-0">{renderStatusIcon(notification.status.id)}</div>
+                  {showStatusIcon && notification.issue && (
+                     <div className="shrink-0">{renderStatusIcon(notification.issue.status.id)}</div>
                   )}
                </div>
 
                <div
                   className={cn(
                      'flex items-center justify-between gap-1.5 transition-opacity duration-200',
-                     notification.read && 'opacity-50'
+                     notification.isRead && 'opacity-50'
                   )}
                >
                   <p className="text-sm text-muted-foreground line-clamp-1">
-                     {notification.content}
+                     {notification.message}
                   </p>
                   <span className="text-xs text-muted-foreground shrink-0">
-                     {notification.timestamp}
+                     {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                   </span>
                </div>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { useNotificationsStore } from '@/store/notifications-store';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,12 @@ export default function Inbox() {
       markAsRead,
       markAllAsRead,
       getUnreadNotifications,
+      fetchNotifications,
    } = useNotificationsStore();
+
+   useEffect(() => {
+      fetchNotifications();
+   }, [fetchNotifications]);
 
    const [showRead, setShowRead] = useState(true);
    const [showSnoozed, setShowSnoozed] = useState(false);
@@ -47,19 +52,19 @@ export default function Inbox() {
    // Filter and sort notifications based on settings
    const filteredNotifications = notifications
       .filter((notification) => {
-         if (!showRead && notification.read) return false;
+         if (!showRead && notification.isRead) return false;
          // Add snoozed filter logic here when implemented
          return true;
       })
       .sort((a, b) => {
          if (showUnreadFirst) {
-            if (!a.read && b.read) return -1;
-            if (a.read && !b.read) return 1;
+            if (!a.isRead && b.isRead) return -1;
+            if (a.isRead && !b.isRead) return 1;
          }
          // Sort by timestamp (newest first by default)
          return ordering === 'newest'
-            ? new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-            : new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+            ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       });
 
    const handleDeleteAllNotifications = () => {

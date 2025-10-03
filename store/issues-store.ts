@@ -73,6 +73,23 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
             issuesByStatus: groupIssuesByStatus(newIssues),
          };
       });
+
+      if (issue.assignee) {
+         fetch('/api/notifications', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+               userId: issue.assignee.id,
+               actorId: '1', // Hardcoded actor ID
+               type: 'issue_raised',
+               message: `A new issue has been assigned to you: ${issue.title}`,
+               entityId: issue.id,
+               isRead: false,
+            }),
+         });
+      }
    },
 
    updateIssue: (id: string, updatedIssue: Partial<Issue>) => {
@@ -192,6 +209,23 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
    // Assignee management
    updateIssueAssignee: (issueId: string, newAssignee: User | null) => {
       get().updateIssue(issueId, { assignee: newAssignee });
+
+      if (newAssignee) {
+         fetch('/api/notifications', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+               userId: newAssignee.id,
+               actorId: '1', // Hardcoded actor ID
+               type: 'issue_assignment',
+               message: `You have been assigned a new issue`,
+               entityId: issueId,
+               isRead: false,
+            }),
+         });
+      }
    },
 
    // Labels management
