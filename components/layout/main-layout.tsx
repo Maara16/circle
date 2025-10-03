@@ -1,8 +1,10 @@
-import React from 'react';
+'use client';
+import React, { useEffect } from 'react';
 import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { CreateIssueModalProvider } from '@/components/common/issues/create-issue-modal-provider';
 import { cn } from '@/lib/utils';
+import { useTeamsStore } from '@/store/teams';
 
 interface MainLayoutProps {
    children: React.ReactNode;
@@ -27,6 +29,12 @@ const isEmptyHeader = (header: React.ReactNode | undefined): boolean => {
 };
 
 export default function MainLayout({ children, header, headersNumber = 2 }: MainLayoutProps) {
+   const { fetchTeams } = useTeamsStore();
+
+   useEffect(() => {
+      fetchTeams();
+   }, [fetchTeams]);
+
    const height = {
       1: 'h-[calc(100svh-40px)] lg:h-[calc(100svh-56px)]',
       2: 'h-[calc(100svh-80px)] lg:h-[calc(100svh-96px)]',

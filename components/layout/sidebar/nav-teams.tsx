@@ -32,16 +32,38 @@ import {
    SidebarMenuSubButton,
    SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { teams } from '@/mock-data/teams';
+import { useTeamsStore } from '@/store/teams';
 import { RiDonutChartFill } from '@remixicon/react';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export function NavTeams() {
-   const joinedTeams = teams.filter((t) => t.joined);
+   const { teams, loading } = useTeamsStore();
+
+   if (loading) {
+      return (
+         <SidebarGroup>
+            <SidebarGroupLabel>Your teams</SidebarGroupLabel>
+            <div className="p-4">
+               <p>Loading teams...</p>
+            </div>
+         </SidebarGroup>
+      );
+   }
+
+   if (teams.length === 0) {
+      return (
+         <SidebarGroup>
+            <SidebarGroupLabel>Your teams</SidebarGroupLabel>
+            <EmptyState message="No teams found." />
+         </SidebarGroup>
+      );
+   }
+
    return (
       <SidebarGroup>
          <SidebarGroupLabel>Your teams</SidebarGroupLabel>
          <SidebarMenu>
-            {joinedTeams.map((item, index) => (
+            {teams.map((item, index) => (
                <Collapsible
                   key={item.name}
                   asChild
@@ -52,7 +74,7 @@ export function NavTeams() {
                      <CollapsibleTrigger asChild>
                         <SidebarMenuButton tooltip={item.name}>
                            <div className="inline-flex size-6 bg-muted/50 items-center justify-center rounded shrink-0">
-                              <div className="text-sm">{item.icon}</div>
+                              <div className="text-sm">{item.name.charAt(0)}</div>
                            </div>
                            <span className="text-sm">{item.name}</span>
                            <span className="w-3 shrink-0">
@@ -101,7 +123,7 @@ export function NavTeams() {
                         <SidebarMenuSub>
                            <SidebarMenuSubItem>
                               <SidebarMenuSubButton asChild>
-                                 <Link href="/lndev-ui/team/CORE/all">
+                                 <Link href={`/team/${item.name}/all`}>
                                     <CopyMinus size={14} />
                                     <span>Issues</span>
                                  </Link>
@@ -109,7 +131,7 @@ export function NavTeams() {
                            </SidebarMenuSubItem>
                            <SidebarMenuSubItem>
                               <SidebarMenuSubButton asChild>
-                                 <Link href="/lndev-ui/team/CORE/all">
+                                 <Link href={`/team/${item.name}/all`}>
                                     <RiDonutChartFill size={14} />
                                     <span>Cycles</span>
                                  </Link>
@@ -117,7 +139,7 @@ export function NavTeams() {
                            </SidebarMenuSubItem>
                            <SidebarMenuSubItem>
                               <SidebarMenuSubButton asChild>
-                                 <Link href="/lndev-ui/projects">
+                                 <Link href="/projects">
                                     <Box size={14} />
                                     <span>Projects</span>
                                  </Link>
