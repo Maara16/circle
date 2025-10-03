@@ -9,9 +9,10 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useProjectsStore } from '@/store/projects-store';
-import { Box, CheckIcon, FolderIcon } from 'lucide-react';
+import { Box, CheckIcon, FolderIcon, FolderOpen } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 
 interface ProjectSelectorProps {
@@ -26,7 +27,7 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
    const { projects, fetchProjects } = useProjectsStore();
 
    useEffect(() => {
-    fetchProjects();
+      fetchProjects();
    }, [fetchProjects]);
 
    useEffect(() => {
@@ -67,7 +68,14 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
                <Command>
                   <CommandInput placeholder="Set project..." />
                   <CommandList>
-                     <CommandEmpty>No projects found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={FolderOpen}
+                           title="No projects found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         <CommandItem
                            value="no-project"
@@ -87,9 +95,7 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
                               onSelect={() => handleProjectChange(project._id)}
                               className="flex items-center justify-between"
                            >
-                              <div className="flex items-center gap-2">
-                                 {project.name}
-                              </div>
+                              <div className="flex items-center gap-2">{project.name}</div>
                               {value === project._id && <CheckIcon size={16} className="ml-auto" />}
                            </CommandItem>
                         ))}

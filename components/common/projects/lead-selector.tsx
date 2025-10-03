@@ -1,5 +1,6 @@
 'use client';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
    Command,
@@ -9,10 +10,10 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { users, User } from '@/mock-data/users';
-import { CheckIcon } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User, users } from '@/mock-data/users';
+import { CheckIcon, UserX } from 'lucide-react';
 import { useId, useState } from 'react';
 
 interface LeadSelectorProps {
@@ -70,7 +71,14 @@ export function LeadSelector({ lead, onLeadChange }: LeadSelectorProps) {
                <Command>
                   <CommandInput placeholder="Set lead..." />
                   <CommandList>
-                     <CommandEmpty>No user found.</CommandEmpty>
+                     <CommandEmpty className="p-0">
+                        <EmptyState
+                           title="No user found"
+                           description="Try a different keyword."
+                           icon={UserX}
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {users.map((user) => (
                            <CommandItem

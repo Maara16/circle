@@ -15,11 +15,14 @@ import { health as allHealth } from '@/mock-data/projects';
 import { priorities } from '@/mock-data/priorities';
 import { useProjectsFilterStore } from '@/store/projects-filter-store';
 import { useState } from 'react';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
    ArrowUpDown,
    BarChart3,
    CheckIcon,
    ChevronRight,
+   ClipboardX,
+   HeartCrack,
    HeartPulse,
    ListFilter,
 } from 'lucide-react';
@@ -126,7 +129,14 @@ export function Filter() {
                   </div>
                   <CommandInput placeholder="Search health..." />
                   <CommandList>
-                     <CommandEmpty>No health found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={HeartCrack}
+                           title="No health found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {allHealth.map((h) => (
                            <CommandItem
@@ -163,7 +173,14 @@ export function Filter() {
                   </div>
                   <CommandInput placeholder="Search priorities..." />
                   <CommandList>
-                     <CommandEmpty>No priorities found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={ClipboardX}
+                           title="No priorities found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {priorities.map((p) => (
                            <CommandItem

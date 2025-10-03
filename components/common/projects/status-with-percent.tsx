@@ -9,9 +9,10 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { status as allStatus, Status } from '@/mock-data/status';
-import { CheckIcon } from 'lucide-react';
+import { Status, status as allStatus } from '@/mock-data/status';
+import { CheckIcon, CircleOff } from 'lucide-react';
 import { useId, useState } from 'react';
 
 interface StatusWithPercentProps {
@@ -64,7 +65,14 @@ export function StatusWithPercent({
             <Command>
                <CommandInput placeholder="Set status..." />
                <CommandList>
-                  <CommandEmpty>No status found.</CommandEmpty>
+                  <CommandEmpty className="p-0">
+                     <EmptyState
+                        title="No status found"
+                        description="Try a different keyword."
+                        icon={CircleOff}
+                        className="py-4"
+                     />
+                  </CommandEmpty>
                   <CommandGroup>
                      {allStatus.map((item) => {
                         const Icon = item.icon;

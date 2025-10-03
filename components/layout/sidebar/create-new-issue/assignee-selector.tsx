@@ -1,5 +1,6 @@
 'use client';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
    Command,
@@ -9,12 +10,12 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useIssuesStore } from '@/store/issues-store';
 import { User, users } from '@/mock-data/users';
-import { CheckIcon, UserCircle } from 'lucide-react';
+import { useIssuesStore } from '@/store/issues-store';
+import { CheckIcon, UserCircle, UserX } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface AssigneeSelectorProps {
    assignee: User | null;
@@ -89,7 +90,14 @@ export function AssigneeSelector({ assignee, onChange }: AssigneeSelectorProps) 
                <Command>
                   <CommandInput placeholder="Assign to..." />
                   <CommandList>
-                     <CommandEmpty>No users found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={UserX}
+                           title="No users found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         <CommandItem
                            value="unassigned"
