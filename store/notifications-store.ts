@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { Notification } from '@/lib/schemas';
 import { Issue } from '@/mock-data/issues';
 import { User } from '@/mock-data/users';
-import { NotificationType } from '@/mock-data/inbox';
 
 export type HydratedNotification = Notification & {
   issue?: Issue;
@@ -25,7 +24,6 @@ interface NotificationsState {
    // Filters
    getUnreadNotifications: () => HydratedNotification[];
    getReadNotifications: () => HydratedNotification[];
-   getNotificationsByType: (type: NotificationType) => HydratedNotification[];
    getNotificationsByUser: (userId: string) => HydratedNotification[];
 
    // Utility functions
@@ -120,10 +118,6 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
 
    getReadNotifications: () => {
       return get().notifications.filter((notification) => notification.isRead);
-   },
-
-   getNotificationsByType: (type: NotificationType) => {
-      return get().notifications.filter((notification) => notification.type === type);
    },
 
    getNotificationsByUser: (userId: string) => {

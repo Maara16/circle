@@ -1,4 +1,13 @@
-import { NotificationType } from '@/mock-data/inbox';
+export type NotificationType =
+  | 'comment'
+  | 'mention'
+  | 'assignment'
+  | 'status'
+  | 'reopened'
+  | 'closed'
+  | 'edited'
+  | 'created'
+  | 'upload';
 
 export interface Notification {
   id: string;
