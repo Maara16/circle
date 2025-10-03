@@ -2,7 +2,9 @@
 
 import { useIssuesStore } from '@/store/issues-store';
 import { useSearchStore } from '@/store/search-store';
+import { SearchX } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { EmptyState } from '../../ui/empty-state';
 import { IssueLine } from './issue-line';
 
 export function SearchIssues() {
@@ -42,9 +44,12 @@ export function SearchIssues() {
                      </div>
                   </div>
                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                     No results found for &quot;{searchQuery}&quot;
-                  </div>
+                  <EmptyState
+                     icon={SearchX}
+                     title="No results found"
+                     description={`Your search for "${searchQuery}" did not return any results.`}
+                     className="mt-4"
+                  />
                )}
             </div>
          )}

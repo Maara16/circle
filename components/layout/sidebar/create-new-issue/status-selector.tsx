@@ -9,10 +9,11 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Status, status as allStatus } from '@/mock-data/status';
 import { useIssuesStore } from '@/store/issues-store';
-import { status as allStatus, Status } from '@/mock-data/status';
-import { CheckIcon } from 'lucide-react';
+import { CheckIcon, CircleOff } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 
 interface StatusSelectorProps {
@@ -71,7 +72,14 @@ export function StatusSelector({ status, onChange }: StatusSelectorProps) {
                <Command>
                   <CommandInput placeholder="Set status..." />
                   <CommandList>
-                     <CommandEmpty>No status found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={CircleOff}
+                           title="No status found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {allStatus.map((item) => (
                            <CommandItem

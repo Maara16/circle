@@ -9,12 +9,13 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useIssuesStore } from '@/store/issues-store';
-import { LabelInterface, labels } from '@/mock-data/labels';
-import { CheckIcon, TagIcon } from 'lucide-react';
-import { useId, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { LabelInterface, labels } from '@/mock-data/labels';
+import { useIssuesStore } from '@/store/issues-store';
+import { CheckIcon, TagIcon, Tags } from 'lucide-react';
+import { useId, useState } from 'react';
 
 interface LabelSelectorProps {
    selectedLabels: LabelInterface[];
@@ -76,7 +77,14 @@ export function LabelSelector({ selectedLabels, onChange }: LabelSelectorProps) 
                <Command>
                   <CommandInput placeholder="Search labels..." />
                   <CommandList>
-                     <CommandEmpty>No labels found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={Tags}
+                           title="No labels found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {labels.map((label) => {
                            const isSelected = selectedLabels.some((l) => l.id === label.id);

@@ -9,10 +9,11 @@ import {
    CommandItem,
    CommandList,
 } from '@/components/ui/command';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useIssuesStore } from '@/store/issues-store';
 import { priorities } from '@/mock-data/priorities';
-import { CheckIcon } from 'lucide-react';
+import { CheckIcon, ClipboardX } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 
 interface PrioritySelectorProps {
@@ -69,7 +70,14 @@ export function PrioritySelector({ priority, issueId }: PrioritySelectorProps) {
                <Command>
                   <CommandInput placeholder="Set priority..." />
                   <CommandList>
-                     <CommandEmpty>No priority found.</CommandEmpty>
+                     <CommandEmpty className="p-0">
+                        <EmptyState
+                           icon={ClipboardX}
+                           title="No priority found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {priorities.map((item) => (
                            <CommandItem

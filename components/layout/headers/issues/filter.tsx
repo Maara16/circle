@@ -27,9 +27,15 @@ import {
    BarChart3,
    Tag,
    Folder,
+   CircleSlash,
+   UserX,
+   ClipboardX,
+   Tags,
+   FolderOpen,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { EmptyState } from '@/components/ui/empty-state';
 
 // Define filter types
 type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'project';
@@ -177,7 +183,14 @@ export function Filter() {
                   </div>
                   <CommandInput placeholder="Search status..." />
                   <CommandList>
-                     <CommandEmpty>No status found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={CircleSlash}
+                           title="No status found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {allStatus.map((item) => (
                            <CommandItem
@@ -216,7 +229,14 @@ export function Filter() {
                   </div>
                   <CommandInput placeholder="Search assignee..." />
                   <CommandList>
-                     <CommandEmpty>No assignees found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={UserX}
+                           title="No assignees found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         <CommandItem
                            value="unassigned"
@@ -274,7 +294,14 @@ export function Filter() {
                   </div>
                   <CommandInput placeholder="Search priority..." />
                   <CommandList>
-                     <CommandEmpty>No priorities found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={ClipboardX}
+                           title="No priorities found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {priorities.map((item) => (
                            <CommandItem
@@ -313,7 +340,14 @@ export function Filter() {
                   </div>
                   <CommandInput placeholder="Search labels..." />
                   <CommandList>
-                     <CommandEmpty>No labels found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={Tags}
+                           title="No labels found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {labels.map((label) => (
                            <CommandItem
@@ -355,7 +389,14 @@ export function Filter() {
                   </div>
                   <CommandInput placeholder="Search projects..." />
                   <CommandList>
-                     <CommandEmpty>No projects found.</CommandEmpty>
+                     <CommandEmpty>
+                        <EmptyState
+                           icon={FolderOpen}
+                           title="No projects found"
+                           description="Try a different keyword."
+                           className="py-4"
+                        />
+                     </CommandEmpty>
                      <CommandGroup>
                         {projects.map((project) => (
                            <CommandItem
