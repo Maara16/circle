@@ -40,7 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                </>
             )}
          </SidebarContent>
-         <SidebarFooter>
+         {/* <SidebarFooter>
             <div className="w-full flex flex-col gap-2">
                {open && (
                   <div className="group/sidebar relative flex flex-col gap-2 rounded-lg border p-4 text-sm w-full">
@@ -93,7 +93,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </Button>
                </div>
             </div>
-         </SidebarFooter>
+         </SidebarFooter> */}
       </Sidebar>
    );
 }
