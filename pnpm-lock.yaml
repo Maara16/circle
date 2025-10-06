@@ -68,12 +68,9 @@ importers:
       '@remixicon/react':
         specifier: ^4.6.0
         version: 4.6.0(react@19.0.0)
-      '@types/jsonwebtoken':
-        specifier: ^9.0.10
-        version: 9.0.10
-      bcryptjs:
-        specifier: ^3.0.2
-        version: 3.0.2
+      '@types/uuid':
+        specifier: ^11.0.0
+        version: 11.0.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -96,8 +93,8 @@ importers:
         specifier: ^0.476.0
         version: 0.476.0(react@19.0.0)
       mongoose:
-        specifier: ^8.18.2
-        version: 8.18.2
+        specifier: ^8.19.0
+        version: 8.19.0
       motion:
         specifier: ^12.4.10
         version: 12.4.10(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -394,8 +391,8 @@ packages:
   '@kayron013/lexorank@2.0.0':
     resolution: {integrity: sha512-acQaZPjnsHnXm28i6YATdi/nZ3gs2c5ZFlkFhXcSw0CgDymF+U5v4SYcQT0/ryjBcEjKl1HQWpBLK+PtVOIAHA==}
 
-  '@mongodb-js/saslprep@1.3.0':
-    resolution: {integrity: sha512-zlayKCsIjYb7/IdfqxorK5+xUMyi4vOKcFy10wKJYc63NSdKI8mNME+uJqfatkPmOSMMUiojrL58IePKBm3gvQ==}
+  '@mongodb-js/saslprep@1.3.1':
+    resolution: {integrity: sha512-6nZrq5kfAz0POWyhljnbWQQJQ5uT8oE2ddX303q1uY0tWsivWKgBDXBBvuFPwOqRRalXJuVO9EjOdVtuhLX0zg==}
 
   '@next/env@15.2.4':
     resolution: {integrity: sha512-+SFtMgoiYP3WoSswuNmxJOCwi06TdWE733D+WPjpXIe4LXGULwEaofiiAy6kbS0+XjM5xF5n3lKuBwN2SnqD9g==}
@@ -1521,6 +1518,10 @@ packages:
   '@types/react@19.0.10':
     resolution: {integrity: sha512-JuRQ9KXLEjaUNjTWpzuR231Z2WpIwczOkBEIvbHNCzQefFIT0L8IqE6NV6ULLyC1SI/i234JnDoMkfg+RjQj2g==}
 
+  '@types/uuid@11.0.0':
+    resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
+    deprecated: This is a stub types definition. uuid provides its own type definitions, so you do not need this installed.
+
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
 
@@ -1685,9 +1686,6 @@ packages:
   bson@6.10.4:
     resolution: {integrity: sha512-WIsKqkSC0ABoBJuT1LEX+2HEvNmNKKgnTAyd0fL8qzK4SH2i9NXg+t08YtdZp/V9IZ33cxe3iV4yM0qg8lMQng==}
     engines: {node: '>=16.20.1'}
-
-  buffer-equal-constant-time@1.0.1:
-    resolution: {integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==}
 
   busboy@1.6.0:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
@@ -2446,12 +2444,6 @@ packages:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
 
-  jwa@1.4.2:
-    resolution: {integrity: sha512-eeH5JO+21J78qMvTIDdBXidBd6nG2kZjg5Ohz/1fpa28Z4CcsWUzJ1ZZyFq/3z3N17aZy+ZuBoHljASbL1WfOw==}
-
-  jws@3.2.2:
-    resolution: {integrity: sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==}
-
   kareem@2.6.3:
     resolution: {integrity: sha512-C3iHfuGUXK2u8/ipq9LfjFfXFxAZMQJJq7vLS45r3D9Y2xQ/m4S8zaR4zMLFWh9AsNPXmcFfUDhTEO8UIC/V6Q==}
     engines: {node: '>=12.0.0'}
@@ -2633,8 +2625,8 @@ packages:
   mongodb-connection-string-url@3.0.2:
     resolution: {integrity: sha512-rMO7CGo/9BFwyZABcKAWL8UJwH/Kc2x0g72uhDWzG48URRax5TCIcJ7Rc3RZqffZzO/Gwff/jyKwCU9TN8gehA==}
 
-  mongodb@6.18.0:
-    resolution: {integrity: sha512-fO5ttN9VC8P0F5fqtQmclAkgXZxbIkYRTUi1j8JO6IYwvamkhtYDilJr35jOPELR49zqCJgXZWwCtW7B+TM8vQ==}
+  mongodb@6.20.0:
+    resolution: {integrity: sha512-Tl6MEIU3K4Rq3TSHd+sZQqRBoGlFsOgNrH5ltAcFBV62Re3Fd+FcaVf8uSEQFOJ51SDowDVttBTONMfoYWrWlQ==}
     engines: {node: '>=16.20.1'}
     peerDependencies:
       '@aws-sdk/credential-providers': ^3.188.0
@@ -2642,7 +2634,7 @@ packages:
       gcp-metadata: ^5.2.0
       kerberos: ^2.0.1
       mongodb-client-encryption: '>=6.0.0 <7'
-      snappy: ^7.2.2
+      snappy: ^7.3.2
       socks: ^2.7.1
     peerDependenciesMeta:
       '@aws-sdk/credential-providers':
@@ -2660,8 +2652,8 @@ packages:
       socks:
         optional: true
 
-  mongoose@8.18.2:
-    resolution: {integrity: sha512-gA6GFlshOHUdNyw9OQTmMLSGzVOPbcbjaSZ1dvR5iMp668N2UUznTuzgTY6V6Q41VtBc4kmL/qqML1RNgXB5Fg==}
+  mongoose@8.19.0:
+    resolution: {integrity: sha512-Z4iRiBkC7aR7a/rxQxtUAUBasFdiXkBuv3EY4NwkRbs92xKA4pwzi1Q4D+odFBe+ChahMNAYg2JP+7tWzZM0sQ==}
     engines: {node: '>=16.20.1'}
 
   motion-dom@12.4.10:
@@ -3543,7 +3535,7 @@ snapshots:
 
   '@kayron013/lexorank@2.0.0': {}
 
-  '@mongodb-js/saslprep@1.3.0':
+  '@mongodb-js/saslprep@1.3.1':
     dependencies:
       sparse-bitfield: 3.0.3
 
@@ -4587,6 +4579,10 @@ snapshots:
     dependencies:
       csstype: 3.1.3
 
+  '@types/uuid@11.0.0':
+    dependencies:
+      uuid: 11.1.0
+
   '@types/webidl-conversions@7.0.3': {}
 
   '@types/whatwg-url@11.0.5':
@@ -4797,8 +4793,6 @@ snapshots:
       fill-range: 7.1.1
 
   bson@6.10.4: {}
-
-  buffer-equal-constant-time@1.0.1: {}
 
   busboy@1.6.0:
     dependencies:
@@ -5698,17 +5692,6 @@ snapshots:
       object.assign: 4.1.7
       object.values: 1.2.1
 
-  jwa@1.4.2:
-    dependencies:
-      buffer-equal-constant-time: 1.0.1
-      ecdsa-sig-formatter: 1.0.11
-      safe-buffer: 5.2.1
-
-  jws@3.2.2:
-    dependencies:
-      jwa: 1.4.2
-      safe-buffer: 5.2.1
-
   kareem@2.6.3: {}
 
   keyv@4.5.4:
@@ -5869,17 +5852,17 @@ snapshots:
       '@types/whatwg-url': 11.0.5
       whatwg-url: 14.2.0
 
-  mongodb@6.18.0:
+  mongodb@6.20.0:
     dependencies:
-      '@mongodb-js/saslprep': 1.3.0
+      '@mongodb-js/saslprep': 1.3.1
       bson: 6.10.4
       mongodb-connection-string-url: 3.0.2
 
-  mongoose@8.18.2:
+  mongoose@8.19.0:
     dependencies:
       bson: 6.10.4
       kareem: 2.6.3
-      mongodb: 6.18.0
+      mongodb: 6.20.0
       mpath: 0.9.0
       mquery: 5.0.0
       ms: 2.1.3
