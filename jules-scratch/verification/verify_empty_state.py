@@ -1,48 +1,36 @@
-import re
 from playwright.sync_api import sync_playwright, Page, expect
 
-import uuid
-
-def verify_empty_state(page: Page):
+def run_test(page: Page):
     """
-    This test verifies that the EmptyState component is displayed when a search
-    on the issues page returns no results.
+    This test verifies that the empty state message is displayed when there are no teams.
     """
-    # 1. Arrange: Register a new user to ensure a clean state.
-    unique_email = f"testuser_{uuid.uuid4()}@example.com"
-    page.goto("http://localhost:3000/register")
-    page.get_by_label("Name").fill("Test User")
-    page.get_by_label("Email").fill(unique_email)
-    page.get_by_label("Password").fill("password123")
-    page.get_by_role("button", name="Create account").click()
+    # 1. Arrange: Go to the teams page.
+    page.goto("http://localhost:3000/teams")
 
-    # Wait for navigation to the main page after registration.
-    expect(page).to_have_url(re.compile(r"http://localhost:3000/"))
+    # Take a screenshot for debugging purposes to see the initial state of the page.
+    page.screenshot(path="jules-scratch/verification/debug_screenshot.png")
 
-    # Wait for the "Inbox" link to be visible, ensuring the page is loaded.
-    inbox_link = page.get_by_role("link", name="Inbox")
-    expect(inbox_link).to_be_visible()
+    # 2. Act: Wait for the page to load and the empty state to appear.
+    # The text "No teams found" is a good indicator that the component has loaded.
+    empty_state_text = page.get_by_text("No teams found. Get started by creating one.")
 
-    # 2. Act: Click the search button and enter a query with no results.
-    page.get_by_role("button", name="Search").click()
-    page.get_by_placeholder("Search issues...").fill("asdfghjkl")
+    # 3. Assert: Check that the empty state text is visible.
+    expect(empty_state_text).to_be_visible()
 
-    # 3. Assert: Verify that the EmptyState component is visible.
-    empty_state_title = page.get_by_role("heading", name="No results found")
-    expect(empty_state_title).to_be_visible()
-
-    empty_state_description = page.get_by_text('Your search for "asdfghjkl" did not return any results.')
-    expect(empty_state_description).to_be_visible()
-
-    # 4. Screenshot: Capture the final result for visual verification.
-    page.screenshot(path="jules-scratch/verification/empty-state-verification.png")
+    # 4. Screenshot: Capture the empty state for visual verification.
+    page.screenshot(path="jules-scratch/verification/empty_state.png")
 
 def main():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        verify_empty_state(page)
-        browser.close()
+        try:
+            run_test(page)
+            print("Verification script completed successfully.")
+        except Exception as e:
+            print(f"An error occurred during verification: {e}")
+        finally:
+            browser.close()
 
 if __name__ == "__main__":
     main()

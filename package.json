@@ -32,6 +32,7 @@
       "@radix-ui/react-tooltip": "^1.1.8",
       "@remixicon/react": "^4.6.0",
       "@types/uuid": "^11.0.0",
+      "bcryptjs": "^3.0.2",
       "class-variance-authority": "^0.7.1",
       "clsx": "^2.1.1",
       "cmdk": "1.0.0",
@@ -72,6 +73,7 @@
       "eslint-plugin-prettier": "^5.2.3",
       "husky": "^9.1.7",
       "lint-staged": "^15.4.3",
+      "playwright": "^1.56.0",
       "prettier": "^3.5.2",
       "tailwindcss": "^4",
       "typescript": "^5"

@@ -53,7 +53,6 @@ interface TeamModalProps {
 export default function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
    const { addTeam, updateTeam } = useTeamsStore();
    const { users, fetchUsers } = useUsersStore();
-   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
 
    const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -77,27 +76,14 @@ export default function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
             description: team.description || '',
             members: team.members.map((m) => m._id),
          });
-         setSelectedMembers(team.members);
       } else {
-         form.reset();
-         setSelectedMembers([]);
+         form.reset({
+            name: '',
+            description: '',
+            members: [],
+         });
       }
    }, [team, form]);
-
-   const handleMemberSelect = (member: User) => {
-      const isSelected = selectedMembers.some((m) => m._id === member._id);
-      let newSelectedMembers;
-      if (isSelected) {
-         newSelectedMembers = selectedMembers.filter((m) => m._id !== member._id);
-      } else {
-         newSelectedMembers = [...selectedMembers, member];
-      }
-      setSelectedMembers(newSelectedMembers);
-      form.setValue(
-         'members',
-         newSelectedMembers.map((m) => m._id)
-      );
-   };
 
    const onSubmit = async (values: z.infer<typeof formSchema>) => {
       try {
@@ -151,7 +137,7 @@ export default function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
                   <FormField
                      control={form.control}
                      name="members"
-                     render={() => (
+                     render={({ field }) => (
                         <FormItem>
                            <FormLabel>Members</FormLabel>
                            <Command>
@@ -169,15 +155,23 @@ export default function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
                                     {users.map((user) => (
                                        <CommandItem
                                           key={user._id}
-                                          onSelect={() => handleMemberSelect(user)}
+                                          onSelect={() => {
+                                             const newMembers = field.value.includes(user._id)
+                                                ? field.value.filter((id) => id !== user._id)
+                                                : [...field.value, user._id];
+                                             field.onChange(newMembers);
+                                          }}
                                           className="flex items-center justify-between"
                                        >
                                           <span>{user.name}</span>
                                           <Checkbox
-                                             checked={selectedMembers.some(
-                                                (m) => m._id === user._id
-                                             )}
-                                             onCheckedChange={() => handleMemberSelect(user)}
+                                             checked={field.value.includes(user._id)}
+                                             onCheckedChange={(checked) => {
+                                                const newMembers = checked
+                                                   ? [...field.value, user._id]
+                                                   : field.value.filter((id) => id !== user._id);
+                                                field.onChange(newMembers);
+                                             }}
                                           />
                                        </CommandItem>
                                     ))}
@@ -185,22 +179,32 @@ export default function TeamModal({ isOpen, onClose, team }: TeamModalProps) {
                               </CommandList>
                            </Command>
                            <div className="mt-2 flex flex-wrap gap-2">
-                              {selectedMembers.map((member) => (
-                                 <div
-                                    key={member._id}
-                                    className="flex items-center gap-1 bg-muted p-1 rounded"
-                                 >
-                                    <span>{member.name}</span>
-                                    <Button
-                                       type="button"
-                                       variant="ghost"
-                                       size="sm"
-                                       onClick={() => handleMemberSelect(member)}
-                                    >
-                                       <X className="h-4 w-4" />
-                                    </Button>
-                                 </div>
-                              ))}
+                              {field.value.map((id) => {
+                                 const member = users.find((user) => user._id === id);
+                                 return (
+                                    member && (
+                                       <div
+                                          key={member._id}
+                                          className="flex items-center gap-1 bg-muted p-1 rounded"
+                                       >
+                                          <span>{member.name}</span>
+                                          <Button
+                                             type="button"
+                                             variant="ghost"
+                                             size="sm"
+                                             onClick={() => {
+                                                const newMembers = field.value.filter(
+                                                   (memberId) => memberId !== id
+                                                );
+                                                field.onChange(newMembers);
+                                             }}
+                                          >
+                                             <X className="h-4 w-4" />
+                                          </Button>
+                                       </div>
+                                    )
+                                 );
+                              })}
                            </div>
                            <FormMessage />
                         </FormItem>
